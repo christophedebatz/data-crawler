@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>DataCrawler v1</title>
+</head>
+<body>
+
+<h1>DataCrawler v1</h1>
+<hr>
+
+{{#if err}}
+  <h2>Something wrong happened</h2>
+  {{err}}
+{{/if}}
+
+<h2>Input files list</h2>
+<ul>
+  {{#each inputs}}
+    <li>{{this}}</li>
+  {{/each}}
+</ul>
+
+<h2>Crawlers list</h2>
+<ul>
+  {{#each crawlers}}
+    <li><a href="/{{slug}}">{{name}}</a></li>
+  {{/each}}
+</ul>
+
+<footer>
+  <div style="text-align: center;">Made with <3 by Chris</div>
+</footer>
+
+</body>
+</html>

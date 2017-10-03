@@ -1,0 +1,48 @@
+import recursiveReadSync from 'recursive-readdir-sync';
+import fs from 'fs';
+import _ from 'lodash';
+
+const dev = {
+  database: {
+    user: 'root',
+    password: 'root',
+    port: 3306,
+    name: 'data_crawler'
+  },
+  inputDir: 'input/',
+  outputDir: 'output/',
+  crawlerDir: 'crawler/',
+};
+
+export function getConfig() {
+  if (process.env.env === 'prod') {
+    return dev;
+  } else {
+    return dev;
+  }
+}
+
+const crawlerConfigs = [];
+
+export function getCrawlerConfigs(crawlersPath) {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!crawlerConfigs || crawlerConfigs.length === 0) {
+        const files = _.filter(recursiveReadSync(crawlersPath), file => file.indexOf('config.json') !== -1);
+
+        files.forEach(file => {
+          const content = fs.readFileSync(file, 'utf8');
+          if (content !== null) {
+            crawlerConfigs.push(JSON.parse(content));
+          }
+        });
+      }
+      return resolve(crawlerConfigs);
+    } catch (err) {
+      if (err.errno === 34) {
+        err = new Error('wrong.crawlers.path');
+      }
+      return reject(err);
+    }
+  });
+}
