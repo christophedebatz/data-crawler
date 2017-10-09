@@ -10,6 +10,10 @@ var _recursiveReaddirSync = require('recursive-readdir-sync');
 
 var _recursiveReaddirSync2 = _interopRequireDefault(_recursiveReaddirSync);
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -27,8 +31,8 @@ var dev = {
     port: 3306,
     name: 'data_crawler'
   },
-  inputDir: 'input/',
-  outputDir: 'output/',
+  inputDir: '/Users/chris/Documents/workspace/alexandre/input',
+  outputDir: '/Users/chris/Documents/workspace/alexandre/output',
   crawlerDir: 'crawler/'
 };
 
@@ -43,7 +47,7 @@ function getConfig() {
 var crawlerConfigs = [];
 
 function getCrawlerConfigs(crawlersPath) {
-  return new Promise(function (resolve, reject) {
+  return new _bluebird2.default(function (resolve, reject) {
     try {
       if (!crawlerConfigs || crawlerConfigs.length === 0) {
         var files = _lodash2.default.filter((0, _recursiveReaddirSync2.default)(crawlersPath), function (file) {
@@ -53,7 +57,7 @@ function getCrawlerConfigs(crawlersPath) {
         files.forEach(function (file) {
           var content = _fs2.default.readFileSync(file, 'utf8');
           if (content !== null) {
-            crawlerConfigs.push(JSON.parse(content));
+            crawlerConfigs.push({ file: file, config: JSON.parse(content) });
           }
         });
       }

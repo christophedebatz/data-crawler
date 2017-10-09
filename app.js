@@ -9,14 +9,9 @@ const app = express();
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
+app.use(express.static('public'));
 
-app.get('/', adminController.indexAction);
-
-getCrawlerConfigs(__dirname + '/' + getConfig().crawlerDir)
-  .then(crawler => {
-    app.get('/' + crawler.slug, () => adminController.chooseCrawler(crawler));
-  }
-);
-
+app.get('/', adminController.index);
+app.get('/crawler-*', adminController.resolveCrawler);
 
 app.listen(3000);

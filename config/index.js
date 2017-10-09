@@ -1,4 +1,5 @@
 import recursiveReadSync from 'recursive-readdir-sync';
+import Promise from 'bluebird';
 import fs from 'fs';
 import _ from 'lodash';
 
@@ -9,8 +10,8 @@ const dev = {
     port: 3306,
     name: 'data_crawler'
   },
-  inputDir: 'input/',
-  outputDir: 'output/',
+  inputDir: '/Users/chris/Documents/workspace/alexandre/input',
+  outputDir: '/Users/chris/Documents/workspace/alexandre/output',
   crawlerDir: 'crawler/',
 };
 
@@ -33,7 +34,7 @@ export function getCrawlerConfigs(crawlersPath) {
         files.forEach(file => {
           const content = fs.readFileSync(file, 'utf8');
           if (content !== null) {
-            crawlerConfigs.push(JSON.parse(content));
+            crawlerConfigs.push({ file, config: JSON.parse(content) });
           }
         });
       }

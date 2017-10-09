@@ -19,13 +19,9 @@ var app = (0, _express2.default)();
 app.engine('handlebars', (0, _expressHandlebars2.default)());
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
+app.use(_express2.default.static('public'));
 
-app.get('/', _adminController.adminController.indexAction);
-
-(0, _index.getCrawlerConfigs)(__dirname + '/' + (0, _index.getConfig)().crawlerDir).then(function (crawler) {
-  app.get('/' + crawler.slug, function () {
-    return _adminController.adminController.chooseCrawler(crawler);
-  });
-});
+app.get('/', _adminController.adminController.index);
+app.get('/crawler-*', _adminController.adminController.resolveCrawler);
 
 app.listen(3000);
