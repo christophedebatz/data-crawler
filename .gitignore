@@ -11,7 +11,7 @@ Desktop.ini
 # Linux
 .directory
 *~
-
+dist
 
 # npm
 node_modules
