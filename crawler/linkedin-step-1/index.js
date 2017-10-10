@@ -1,9 +1,17 @@
 import Promise from 'bluebird';
+import fs from 'fs';
 
 export const crawler = {
 
   hello() {
     console.log('Hello Linkedin');
+  },
+
+  getIndexHtml(options) {
+    const content = fs.readFileSync('./views/index.handlebars', 'utf8');
+    const template = Handlebars.compile(content);
+    const context = { name: 'Christophe' };
+    return template(context);
   },
 
   crawl(options) {

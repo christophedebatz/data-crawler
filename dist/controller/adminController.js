@@ -55,8 +55,8 @@ var adminController = exports.adminController = {
         if (crawler.file.indexOf(requestedCrawler) > -1) {
           var crawlerPath = _path2.default.join('../', (0, _index.getConfig)().crawlerDir, requestedCrawler, '/index.js');
           var crawlerService = require(crawlerPath).crawler;
-          if (typeof crawlerService['hello'] === 'function') {
-            crawlerService.hello();
+          if (typeof crawlerService.getIndexHtml === 'function') {
+            res.render('crawler', { child: crawlerService.getIndexHtml() });
           } else {
             console.log('Cannot instanciate', crawler.config.name, crawlerPath);
           }

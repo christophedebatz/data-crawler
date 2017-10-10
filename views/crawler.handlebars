@@ -1,0 +1,24 @@
+{{> header}}
+
+<div id="page-content-wrapper">
+  <div class="container-fluid">
+    <h1>DataCrawler v1</h1>
+    <hr>
+
+    {{#if err}}
+      <h2>Something wrong happened</h2>
+      {{err}}
+    {{/if}}
+
+    <h2>Input files list</h2>
+    <span>In <i>{{inputDir}}</i></span>
+
+    {{child}}
+
+    <p style="padding-top: 50px; color: lightgray;">
+      You need to restart the app each time you add a new crawler. No need to restart when just adding an input file.
+    </p>
+  </div>
+</div>
+
+{{> footer}}
