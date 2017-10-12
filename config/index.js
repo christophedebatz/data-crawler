@@ -32,6 +32,7 @@ export function getCrawlerConfigs(crawlersPath) {
         const files = _.filter(recursiveReadSync(crawlersPath), file => file.indexOf('config.json') !== -1);
 
         files.forEach(file => {
+          console.log(file);
           const content = fs.readFileSync(file, 'utf8');
           if (content !== null) {
             crawlerConfigs.push({ file, config: JSON.parse(content) });

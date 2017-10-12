@@ -1,5 +1,23 @@
-<div>
+<fieldset style="padding: 20px; border: 1px dotted lightGray;">
+  <legend>LinkedIn Step 1</legend>
 
-  Welcome {{name}} to LinkedIn step 1
+  <h4>Select a file to update...</h4>
 
-</div>
+  <form method="post">
+    <ul style="list-style-type: none;">
+      {{#each files}}
+        <li>
+          <div style="margin-left: -15px;">
+            <input type="radio" name="input-file-name" id="{{this}}" value="{{this}}">
+            &nbsp;<label for="{{this}}" style="cursor: pointer">{{this}}</label>
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+
+    <h4>Save as...</h4>
+    <input type="text" name="output-file-name" placeholder="Type a file name..." size="30">
+    <input type="button" value="Launch">
+  </form>
+
+</fieldset>

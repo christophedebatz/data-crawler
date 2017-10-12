@@ -1,5 +1,7 @@
 import Promise from 'bluebird';
 import fs from 'fs';
+import path from 'path';
+import Handlebars from 'handlebars';
 
 export const crawler = {
 
@@ -7,11 +9,10 @@ export const crawler = {
     console.log('Hello Linkedin');
   },
 
-  getIndexHtml(options) {
-    const content = fs.readFileSync('./views/index.handlebars', 'utf8');
+  getIndexHtml(files) {
+    const content = fs.readFileSync(__dirname + '/views/index.handlebars', 'utf8');
     const template = Handlebars.compile(content);
-    const context = { name: 'Christophe' };
-    return template(context);
+    return template({ files });
   },
 
   crawl(options) {

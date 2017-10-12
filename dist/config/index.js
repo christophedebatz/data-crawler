@@ -55,6 +55,7 @@ function getCrawlerConfigs(crawlersPath) {
         });
 
         files.forEach(function (file) {
+          console.log(file);
           var content = _fs2.default.readFileSync(file, 'utf8');
           if (content !== null) {
             crawlerConfigs.push({ file: file, config: JSON.parse(content) });

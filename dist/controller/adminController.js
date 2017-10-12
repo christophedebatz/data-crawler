@@ -23,9 +23,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var adminController = exports.adminController = {
 
-  index: function index(req, res) {
-    var config = (0, _index.getConfig)();
-    var inputs = _fs2.default.readdirSync(config.inputDir);
+  getInputFiles: function getInputFiles(inputDir) {
+    var inputs = _fs2.default.readdirSync(inputDir);
     var inputsFiles = [];
 
     inputs.forEach(function (input) {
@@ -34,10 +33,16 @@ var adminController = exports.adminController = {
       }
     });
 
+    return inputsFiles;
+  },
+
+  index: function index(req, res) {
+    var config = (0, _index.getConfig)();
+    var inputsFiles = adminController.getInputFiles(config.inputDir);
     var crawlerDir = _path2.default.resolve(__dirname + '/../../' + config.crawlerDir);
     var renderVars = { inputDir: config.inputDir, crawlerDir: crawlerDir };
 
-    return (0, _index.getCrawlerConfigs)(__dirname + '/../' + config.crawlerDir).then(function (crawlers) {
+    (0, _index.getCrawlerConfigs)(__dirname + '/../' + config.crawlerDir).then(function (crawlers) {
       return renderVars = Object.assign(renderVars, { inputs: inputsFiles, crawlers: crawlers.map(function (i) {
           return i.config;
         }) });
@@ -50,13 +55,16 @@ var adminController = exports.adminController = {
 
   resolveCrawler: function resolveCrawler(req, res) {
     var requestedCrawler = req.originalUrl.replace('/crawler-', '');
+    var inputsFiles = adminController.getInputFiles((0, _index.getConfig)().inputDir);
+
     (0, _index.getCrawlerConfigs)(__dirname + '/' + (0, _index.getConfig)().crawlerDir).then(function (crawlers) {
       crawlers.forEach(function (crawler) {
-        if (crawler.file.indexOf(requestedCrawler) > -1) {
+        if (crawler && crawler.file.indexOf(requestedCrawler) > -1) {
           var crawlerPath = _path2.default.join('../', (0, _index.getConfig)().crawlerDir, requestedCrawler, '/index.js');
           var crawlerService = require(crawlerPath).crawler;
           if (typeof crawlerService.getIndexHtml === 'function') {
-            res.render('crawler', { child: crawlerService.getIndexHtml() });
+            var child = crawlerService.getIndexHtml(inputsFiles);
+            res.render('crawler', { child: child });
           } else {
             console.log('Cannot instanciate', crawler.config.name, crawlerPath);
           }
@@ -66,5 +74,4 @@ var adminController = exports.adminController = {
       });
     });
   }
-
 };
