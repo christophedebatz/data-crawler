@@ -26,9 +26,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var dev = {
   database: {
+    url: 'localhost',
+    port: 3307,
     user: 'root',
-    password: 'root',
-    port: 3306,
+    password: '',
     name: 'data_crawler'
   },
   inputDir: '/Users/chris/Documents/workspace/alexandre/input',

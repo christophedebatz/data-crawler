@@ -53,6 +53,35 @@ var adminController = exports.adminController = {
     }); // use bluebird to get finally
   },
 
+  submitCrawler: function submitCrawler(req, res) {
+    // launch crawling
+    if (!req.body.inputFileName) {
+      throw new Error('invalid.crawler.form');
+    }
+
+    // display page
+    var requestedCrawler = req.originalUrl.replace('/crawler-', '');
+    var crawlerPath = _path2.default.join('../', (0, _index.getConfig)().crawlerDir, requestedCrawler, '/index.js');
+    var crawlerService = require(crawlerPath).crawler;
+
+    var error = false;
+    var crawling = null;
+
+    if (typeof crawlerService.createCrawlingJob === 'function') {
+      crawling = crawlerService.createCrawlingJob({
+        input: req.body.inputFileName,
+        output: req.body.outputFileName || null
+      }, function (err, result) {
+        if (typeof crawlerService.getCrawlerHtml === 'function') {
+          var child = crawlerService.getCrawlerHtml(err, result);
+          res.render('crawler', { child: child });
+        }
+      });
+    } else {
+      console.log('Cannot instanciate crawler', crawlerPath);
+    }
+  },
+
   resolveCrawler: function resolveCrawler(req, res) {
     var requestedCrawler = req.originalUrl.replace('/crawler-', '');
     var inputsFiles = adminController.getInputFiles((0, _index.getConfig)().inputDir);
@@ -60,6 +89,7 @@ var adminController = exports.adminController = {
     (0, _index.getCrawlerConfigs)(__dirname + '/' + (0, _index.getConfig)().crawlerDir).then(function (crawlers) {
       crawlers.forEach(function (crawler) {
         if (crawler && crawler.file.indexOf(requestedCrawler) > -1) {
+          console.log('Crawler has been found !');
           var crawlerPath = _path2.default.join('../', (0, _index.getConfig)().crawlerDir, requestedCrawler, '/index.js');
           var crawlerService = require(crawlerPath).crawler;
           if (typeof crawlerService.getIndexHtml === 'function') {

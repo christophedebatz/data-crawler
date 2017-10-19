@@ -33,6 +33,36 @@ export const adminController = {
       .finally(() => res.render('home', renderVars)); // use bluebird to get finally
   },
 
+  submitCrawler: (req, res) => {
+    // launch crawling
+    if (!req.body.inputFileName) {
+      throw new Error('invalid.crawler.form');
+    }
+
+    // display page
+    const requestedCrawler = req.originalUrl.replace('/crawler-', '');
+    const crawlerPath = path.join('../', getConfig().crawlerDir, requestedCrawler, '/index.js');
+    const crawlerService = require(crawlerPath).crawler;
+
+    let error = false;
+    let crawling = null;
+
+    if (typeof crawlerService.createCrawlingJob === 'function') {
+      crawling = crawlerService.createCrawlingJob({
+        input: req.body.inputFileName,
+        output: req.body.outputFileName || null,
+      },
+      (err, result) => {
+        if (typeof crawlerService.getCrawlerHtml === 'function') {
+          const child = crawlerService.getCrawlerHtml(err, result);
+          res.render('crawler', { child });
+        }
+      });
+    } else {
+      console.log('Cannot instanciate crawler', crawlerPath);
+    }
+  },
+
   resolveCrawler: (req, res) => {
     const requestedCrawler = req.originalUrl.replace('/crawler-', '');
     const inputsFiles = adminController.getInputFiles(getConfig().inputDir);
@@ -41,6 +71,7 @@ export const adminController = {
       .then(crawlers => {
         crawlers.forEach(crawler => {
           if (crawler && crawler.file.indexOf(requestedCrawler) > -1) {
+            console.log('Crawler has been found !');
             const crawlerPath = path.join('../', getConfig().crawlerDir, requestedCrawler, '/index.js');
             const crawlerService = require(crawlerPath).crawler;
             if (typeof crawlerService.getIndexHtml === 'function') {
