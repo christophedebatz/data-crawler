@@ -1,8 +1,10 @@
 import recursiveReadSync from 'recursive-readdir-sync';
 import fs from 'fs';
+import moment from 'moment';
 import path from 'path';
 
 import { getConfig, getCrawlerConfigs } from '../config/index.js';
+import { Database } from '../service/Database.js';
 
 export const adminController = {
 
@@ -33,6 +35,39 @@ export const adminController = {
       .finally(() => res.render('home', renderVars)); // use bluebird to get finally
   },
 
+  getJobs: (req, res) => {
+    // want an ajax response
+    if (req.xhr) {
+      const query = 'select * from CRAWLER.`crawler_jobs`';
+
+      Database.getConnection()
+        .query(query, (err, rows, fields) => {
+          if (err) {
+            throw err;
+          }
+          const jobs = rows.map(row => {
+            return {
+              id: row['id'],
+              name: row['crawler_name'],
+              inputFile: row['input_file'],
+              outputFile: row['output_file'],
+              createdAt: row['creation_date'],
+              createdAtString: moment(row['creation_date']).fromNow(),
+              startedAt: row['start_date'],
+              startedAtString: row['start_date'] ? moment(row['start_date']).fromNow() : '-',
+              status: row['status'],
+              step: row['step'],
+              progress: row['progress']
+            }
+          });
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify(jobs));
+        });
+      } else {
+        res.render('jobs');
+      }
+  },
+
   submitCrawler: (req, res) => {
     // launch crawling
     if (!req.body.inputFileName) {
@@ -43,8 +78,6 @@ export const adminController = {
     const requestedCrawler = req.originalUrl.replace('/crawler-', '');
     const crawlerPath = path.join('../', getConfig().crawlerDir, requestedCrawler, '/index.js');
     const crawlerService = require(crawlerPath).crawler;
-
-    let error = false;
     let crawling = null;
 
     if (typeof crawlerService.createCrawlingJob === 'function') {
@@ -56,10 +89,12 @@ export const adminController = {
         if (typeof crawlerService.getCrawlerHtml === 'function') {
           const child = crawlerService.getCrawlerHtml(err, result);
           res.render('crawler', { child });
+        } else {
+          console.log('getCrawlerHtml not found on ', crawlerPath);
         }
       });
     } else {
-      console.log('Cannot instanciate crawler', crawlerPath);
+      console.log('createCrawlingJob not found on', crawlerPath);
     }
   },
 

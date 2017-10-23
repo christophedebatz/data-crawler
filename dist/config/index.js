@@ -34,7 +34,8 @@ var dev = {
   },
   inputDir: '/Users/chris/Documents/workspace/alexandre/input',
   outputDir: '/Users/chris/Documents/workspace/alexandre/output',
-  crawlerDir: 'crawler/'
+  crawlerDir: 'crawler/',
+  progressInterval: '*/15 * * * * *' // means every 30 seconds
 };
 
 function getConfig() {

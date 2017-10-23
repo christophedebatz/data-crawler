@@ -1,7 +1,15 @@
 <h3>LinkedIn Step 1</h3>
 
-<p style="color: green;">Done :)</p>
+{{#unless err}}
+<p style="color: green;">
+  Your new Linkedin step1 task will start very soon.<br>
+  <a href="/jobs">Click here</a> to view progress.
+</p>
+{{/unless}}
 
 {{#err}}
-  <p style="color: red;">An error occured: {{err}}</p>
+  <p style="color: red;">
+    An error occured while creating the crawler job:<br>
+    <pre style="opacity: 0.7;">{{err}}</pre>
+  </p>
 {{/err}}

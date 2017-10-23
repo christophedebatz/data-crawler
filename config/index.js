@@ -14,6 +14,7 @@ const dev = {
   inputDir: '/Users/chris/Documents/workspace/alexandre/input',
   outputDir: '/Users/chris/Documents/workspace/alexandre/output',
   crawlerDir: 'crawler/',
+  progressInterval: '*/15 * * * * *' // means every 30 seconds
 };
 
 export function getConfig() {

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Simple Data Crawler v1.0</title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/simple-sidebar.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="wrapper" class="toggled">
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="/">
+                    DataCrawler v1
+                </a>
+            </li>
+            <li>
+                <a href="/">Dashboard</a>
+            </li>
+            <li>
+                <a href="/jobs">Jobs</a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="page-content-wrapper">
+      <div class="container-fluid">
+        <h1>DataCrawler v1</h1>
+        <hr>
+
+        {{#if err}}
+          <h4 style="color: red;">Something wrong happened!</h4>
+          {{err}}
+        {{/if}}
+
+        <h2>Crawling jobs progress</h2>
+        {{#noJobs}}
+          <p>There is no crawling jobs that are not completed yet...</p>
+        {{/noJobs}}
+        <p>&nbsp;</p>
+        <table class="table table-hover table-responsive-md">
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              <th scope="col">Crawler name</th>
+              <th scope="col">Input file</th>
+              <th scope="col">Output file</th>
+              <th scope="col">Started at</th>
+              <th scope="col">Status</th>
+              <th scope="col">Step</th>
+              <th scope="col">%</th>
+            </tr>
+          </thead>
+          <tbody id="progress-table">
+          </tbody>
+        </table>
+        <p style="padding-top: 50px; color: lightgray;">
+          You need to restart the app each time you add a new crawler. No need to restart when just adding an input file.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/popper/popper.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript">
+
+    function callServer(callback) {
+      $.ajax({
+        dataType: 'json',
+        url: '/jobs',
+        success: callback
+      });
+    }
+
+    function appendTable(items) {
+      $('#progress-table > tr').remove();
+      $.each(items, function(i, item) {
+        var status = (item.status || 'unknown').toLowerCase();
+        var loader =  ['completed', 'failed'].indexOf(status) === -1 ? '<img src="/image/loader.gif" alt="">' : '';
+        $('<tr>').append(
+          $('<td>').html(loader),
+          $('<td>').text(item.name),
+          $('<td>').text(item.inputFile),
+          $('<td>').text(item.outputFile),
+          $('<td>').text(item.startedAtString),
+          $('<td>').text((item.status || 'unknown').toLowerCase()),
+          $('<td>').text(status === 'completed' ? '-' : item.step),
+          $('<td>').text(status === 'completed' ? '100' : item.progress)
+        ).appendTo('#progress-table');
+      });
+    }
+
+    $(function() {
+      callServer(appendTable);
+      var interval = 2*1000; // every ten seconds
+      var updater = setInterval(function() {
+        callServer(appendTable);
+      }, interval);
+    });
+
+  </script>
+
+  </body>
+</html>

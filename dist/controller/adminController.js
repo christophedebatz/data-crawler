@@ -13,11 +13,17 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
 var _index = require('../config/index.js');
+
+var _Database = require('../service/Database.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -53,6 +59,38 @@ var adminController = exports.adminController = {
     }); // use bluebird to get finally
   },
 
+  getJobs: function getJobs(req, res) {
+    // want an ajax response
+    if (req.xhr) {
+      var query = 'select * from CRAWLER.`crawler_jobs`';
+
+      _Database.Database.getConnection().query(query, function (err, rows, fields) {
+        if (err) {
+          throw err;
+        }
+        var jobs = rows.map(function (row) {
+          return {
+            id: row['id'],
+            name: row['crawler_name'],
+            inputFile: row['input_file'],
+            outputFile: row['output_file'],
+            createdAt: row['creation_date'],
+            createdAtString: (0, _moment2.default)(row['creation_date']).fromNow(),
+            startedAt: row['start_date'],
+            startedAtString: row['start_date'] ? (0, _moment2.default)(row['start_date']).fromNow() : '-',
+            status: row['status'],
+            step: row['step'],
+            progress: row['progress']
+          };
+        });
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(jobs));
+      });
+    } else {
+      res.render('jobs');
+    }
+  },
+
   submitCrawler: function submitCrawler(req, res) {
     // launch crawling
     if (!req.body.inputFileName) {
@@ -63,8 +101,6 @@ var adminController = exports.adminController = {
     var requestedCrawler = req.originalUrl.replace('/crawler-', '');
     var crawlerPath = _path2.default.join('../', (0, _index.getConfig)().crawlerDir, requestedCrawler, '/index.js');
     var crawlerService = require(crawlerPath).crawler;
-
-    var error = false;
     var crawling = null;
 
     if (typeof crawlerService.createCrawlingJob === 'function') {
@@ -75,10 +111,12 @@ var adminController = exports.adminController = {
         if (typeof crawlerService.getCrawlerHtml === 'function') {
           var child = crawlerService.getCrawlerHtml(err, result);
           res.render('crawler', { child: child });
+        } else {
+          console.log('getCrawlerHtml not found on ', crawlerPath);
         }
       });
     } else {
-      console.log('Cannot instanciate crawler', crawlerPath);
+      console.log('createCrawlingJob not found on', crawlerPath);
     }
   },
 

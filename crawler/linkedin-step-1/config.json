@@ -4,5 +4,20 @@
   "author": "Christophe de Batz",
   "inception": "03/10/2017",
   "description": "",
-  "enabled": "true"
+  "enabled": "true",
+  "inputStructure": [
+    { "index": 1, "name": "external_id" },
+    { "index": 4, "name": "first_name" },
+    { "index": 5, "name": "last_name" },
+    { "index": 3, "name": "email" },
+    { "index": 7, "name": "mobile" },
+    { "index": 8, "name": "zipcode" },
+    { "index": 9, "name": "city" },
+    { "index": 2, "name": "job_position" },
+    { "index": 11, "name": "job_company_sector" },
+    { "index": 12, "name": "job_company_sub_sector" },
+    { "index": 13, "name": "job_company_size" },
+    { "index": 10, "name": "job_company_name" },
+    { "index": 6, "name": "is_premium" }
+  ]
 }

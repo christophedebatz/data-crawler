@@ -17,5 +17,11 @@ export const Database = {
       });
     }
     return connection;
+  },
+
+  close: () => {
+    if (connection) {
+      connection.destroy();
+    }
   }
 }
